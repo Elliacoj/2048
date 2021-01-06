@@ -5,6 +5,11 @@ let line4 = document.getElementById("line4");
 let result = document.getElementById("result");
 let scoreT = document.getElementById("score");
 
+let looseUp = 0;
+let looseDown = 0;
+let looseLeft = 0;
+let looseRight = 0;
+
 let arrayLine1 = [];
 let arrayLine2 = [];
 let arrayLine3 = [];
@@ -73,6 +78,8 @@ function creat(caseAdd) {
 
 // Button for begin a game
 newGame.addEventListener("click", function () {
+    resetLoose();
+
     for(let x = 1; x <= 16; x++) {
         let caseTest = "case" + x
         document.getElementById(caseTest).classList.remove("notEmpty");
@@ -98,23 +105,110 @@ newGame.addEventListener("click", function () {
  * @param event
  */
 function move(event) {
-    loose();
     switch(event.key) {
         case "z":
-            checkUp();
+            if(checkUp() === 0) {
+                if(looseUp === 0) {
+                    looseUp++;
+                }
+            }
+
+            else {
+                resetLoose()
+            }
             break;
 
         case "q":
-            checkLeft();
+            if(checkLeft() === 0) {
+                if(looseLeft === 0) {
+                    looseLeft++;
+                }
+            }
+
+            else {
+                resetLoose()
+            }
             break;
 
         case "s":
-            checkDown();
+            if(checkDown() === 0) {
+                if(looseDown === 0) {
+                    looseDown++;
+                }
+            }
+
+            else {
+                resetLoose()
+            }
             break;
 
         case "d":
-            checkRight();
+            if(checkRight() === 0) {
+                if(looseRight === 0) {
+                    looseRight++;
+                }
+            }
+
+            else {
+                resetLoose()
+            }
             break;
+    }
+
+    loose();
+}
+
+function addCase(x, y, a, b) {
+    if((arrayLine[x][y].childElementCount > 0) && (arrayLine[a][b].childElementCount > 0)) {
+        if(arrayLine[x][y].lastElementChild.innerHTML === arrayLine[a][b].lastElementChild.innerHTML) {
+            console.log(arrayLine[x][y].lastElementChild.classList.length);
+            if((arrayLine[x][y].lastElementChild.classList.length !== 1) || (arrayLine[a][b].lastElementChild.classList.length !== 1)) {
+                arrayLine[x][y].lastElementChild.innerHTML =
+                    ((parseFloat(arrayLine[x][y].lastElementChild.innerHTML)) +
+                        (parseFloat(arrayLine[a][b].lastElementChild.innerHTML))).toString();
+                arrayLine[a][b].removeChild(arrayLine[a][b].lastElementChild);
+                arrayLine[a][b].classList.remove("notEmpty");
+                notOK++;
+                scoreT.innerHTML =  ((parseFloat(scoreT.innerHTML)) + (parseFloat(arrayLine[x][y].lastElementChild.innerHTML))).toString();
+                color(arrayLine[x][y].lastElementChild);
+                arrayLine[x][y].lastElementChild.classList.add("ok");
+                win(arrayLine[x][y].lastElementChild);
+            }
+        }
+    }
+}
+
+function moveCaseX(x, y, a, b, c, notOK) {
+    if((arrayLine[x][y].childElementCount === 0) && (arrayLine[x + a][y].childElementCount > 0)) {
+        if(x === 0) {
+            emptyUp(x, y, x);
+            notOK++;
+        }
+
+        else if((arrayLine[x + b][y].childElementCount === 0)&& (arrayLine[x + a][y].childElementCount > 0)) {
+            if((x + b + 1) === 0) {
+                let newX = x + b;
+                emptyUp(x, y, newX);
+                notOK++;
+            }
+
+            else if((arrayLine[x + b + 2][y].childElementCount === 0)&& (arrayLine[x + a][y].childElementCount > 0)) {
+                let newX = x + c;
+                emptyUp(x, y, newX);
+                notOK++;
+            }
+
+            else {
+                let newX = x + b;
+                emptyUp(x, y, newX);
+                notOK++;
+            }
+        }
+
+        else {
+            emptyUp(x, y, x);
+            notOK++;
+        }
     }
 }
 
@@ -123,57 +217,28 @@ function move(event) {
  */
 function checkUp() {
     let notOK = 0;
+
     for(let x = 0; x < 3; x++) {
         for(let y = 0; y < 4; y++) {
-            if((arrayLine[x][y].childElementCount === 0) && (arrayLine[x + 1][y].childElementCount > 0)) {
-                if(x === 0) {
-                    emptyUp(x, y, x);
-                    notOK++;
-                }
-
-                else if((arrayLine[x - 1][y].childElementCount === 0)&& (arrayLine[x + 1][y].childElementCount > 0)) {
-                    if((x - 1) === 0) {
-                        let newX = x - 1;
-                        emptyUp(x, y, newX);
-                        notOK++;
-                    }
-
-                    else if((arrayLine[x - 2][y].childElementCount === 0)&& (arrayLine[x + 1][y].childElementCount > 0)) {
-                        let newX = x - 2;
-                        emptyUp(x, y, newX);
-                        notOK++;
-                    }
-
-                    else {
-                        let newX = x - 1;
-                        emptyUp(x, y, newX);
-                        notOK++;
-                    }
-                }
-
-                else {
-                    emptyUp(x, y, x);
-                    notOK++;
-                }
-            }
+            addCase(x, y, (x + 1), y);
         }
     }
 
     for(let x = 0; x < 3; x++) {
         for(let y = 0; y < 4; y++) {
-            if((arrayLine[x][y].childElementCount > 0) && (arrayLine[x + 1][y].childElementCount > 0)) {
-                if(arrayLine[x][y].lastElementChild.innerHTML === arrayLine[x + 1][y].lastElementChild.innerHTML) {
-                    arrayLine[x][y].lastElementChild.innerHTML =
-                        ((parseFloat(arrayLine[x][y].lastElementChild.innerHTML)) +
-                        (parseFloat(arrayLine[x + 1][y].lastElementChild.innerHTML))).toString();
-                    arrayLine[x + 1][y].removeChild(arrayLine[x + 1][y].lastElementChild);
-                    arrayLine[x + 1][y].classList.remove("notEmpty");
-                    notOK++;
-                    scoreT.innerHTML =  ((parseFloat(scoreT.innerHTML)) + (parseFloat(arrayLine[x][y].lastElementChild.innerHTML))).toString();
-                    color(arrayLine[x][y].lastElementChild);
-                    win(arrayLine[x][y].lastElementChild);
-                }
-            }
+            moveCaseX(x, y, 1, -1, -2, notOK);
+        }
+    }
+
+    for(let x = 0; x < 3; x++) {
+        for(let y = 0; y < 4; y++) {
+            addCase(x, y, (x + 1), y);
+        }
+    }
+
+    for(let x = 0; x < 3; x++) {
+        for(let y = 0; y < 4; y++) {
+            moveCaseX(x, y, 1, -1, -2, notOK);
         }
     }
 
@@ -191,6 +256,26 @@ function checkUp() {
  */
 function checkDown() {
     let notOK = 0;
+
+    for(let x = 3; x > 0; x--) {
+        for(let y = 0; y < 4; y++) {
+            if((arrayLine[x][y].childElementCount > 0) && (arrayLine[x - 1][y].childElementCount > 0)) {
+                if(arrayLine[x][y].lastElementChild.innerHTML === arrayLine[x - 1][y].lastElementChild.innerHTML) {
+                    arrayLine[x][y].lastElementChild.innerHTML =
+                        ((parseFloat(arrayLine[x][y].lastElementChild.innerHTML)) +
+                            (parseFloat(arrayLine[x - 1][y].lastElementChild.innerHTML))).toString();
+                    arrayLine[x - 1][y].removeChild(arrayLine[x - 1][y].lastElementChild);
+                    arrayLine[x - 1][y].classList.remove("notEmpty");
+                    notOK++;
+                    scoreT.innerHTML =  ((parseFloat(scoreT.innerHTML)) + (parseFloat(arrayLine[x][y].lastElementChild.innerHTML))).toString();
+                    arrayLine[x][y].lastElementChild.classList.add("ok");
+                    color(arrayLine[x][y].lastElementChild);
+                    win(arrayLine[x][y].lastElementChild);
+                }
+            }
+        }
+    }
+
     for(let x = 3; x > 0; x--) {
         for(let y = 0; y < 4; y++) {
             if((arrayLine[x][y].childElementCount === 0) && (arrayLine[x - 1][y].childElementCount > 0)) {
@@ -497,6 +582,11 @@ function color(div) {
             div.style.backgroundColor = "#ff5643";
             div.style.color = "#831414";
             break;
+
+        case "2048":
+            div.style.backgroundColor = "#ff9443";
+            div.style.color = "#833b14";
+            break;
     }
 }
 
@@ -506,61 +596,42 @@ function color(div) {
  */
 function win(div) {
     if(div.innerHTML === "2048") {
-        for(let x = 0; x < arrayLine.length; x++) {
-            document.getElementsByClassName("line")[x].style.display = "none";
-        }
+        document.body.removeEventListener("keypress", move);
+        setInterval(function () {
+            for(let x = 0; x < arrayLine.length; x++) {
+                document.getElementsByClassName("line")[x].style.display = "none";
+            }
 
-        result.innerHTML = "Bravo, vous avez réussi!!!";
-        result.style.display = "flex";
+            result.innerHTML = "Bravo, vous avez réussi!!!";
+            result.style.display = "flex";
+        }, 2000);
+
     }
 }
+
 /**
  * Function for check the loose condition
  */
 function loose() {
-    let looseUp = 0;
-    let looseDown = 0;
-    let looseLeft = 0;
-    let looseRight = 0;
-
-    if(checkUp() === 0) {
-        looseUp++;
-    }
-
-    else if(looseUp === 1) {
-        looseUp--;
-    }
-
-    if(checkDown() === 0) {
-        looseDown++;
-    }
-
-    else if(looseDown === 1) {
-        looseDown--;
-    }
-
-    if(checkLeft() === 0) {
-        looseLeft++;
-    }
-
-    else if(looseLeft === 1) {
-        looseLeft--;
-    }
-
-    if(checkRight() === 0) {
-        looseRight++;
-    }
-
-    else if(looseRight === 1) {
-        looseRight--;
-    }
-
     if((looseUp === 1) && (looseDown === 1) && (looseLeft === 1) && (looseRight === 1)) {
-        for(let x = 0; x < arrayLine.length; x++) {
-            document.getElementsByClassName("line")[x].style.display = "none";
-        }
 
-        result.innerHTML = "Dommage, vous avez perdu!!!";
-        result.style.display = "flex";
+        setInterval(function () {
+            for(let x = 0; x < arrayLine.length; x++) {
+                document.getElementsByClassName("line")[x].style.display = "none";
+            }
+
+            result.innerHTML = "Dommage, vous avez perdu!!!";
+            result.style.display = "flex";
+        }, 2000);
     }
+}
+
+/**
+ * Function for reset looses points
+ */
+function resetLoose() {
+    looseUp = 0;
+    looseDown = 0;
+    looseRight = 0;
+    looseLeft = 0;
 }
