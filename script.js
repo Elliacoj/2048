@@ -9,6 +9,7 @@ let looseUp = 0;
 let looseDown = 0;
 let looseLeft = 0;
 let looseRight = 0;
+let notOK = 0;
 
 let arrayLine1 = [];
 let arrayLine2 = [];
@@ -99,7 +100,6 @@ newGame.addEventListener("click", function () {
     document.body.addEventListener("keypress", move);
 })
 
-
 /**
  * Function for keypress and execution moves
  * @param event
@@ -110,11 +110,13 @@ function move(event) {
             if(checkUp() === 0) {
                 if(looseUp === 0) {
                     looseUp++;
+                    notOK = 0;
                 }
             }
 
             else {
                 resetLoose()
+                notOK = 0;
             }
             break;
 
@@ -122,11 +124,13 @@ function move(event) {
             if(checkLeft() === 0) {
                 if(looseLeft === 0) {
                     looseLeft++;
+                    notOK = 0;
                 }
             }
 
             else {
                 resetLoose()
+                notOK = 0;
             }
             break;
 
@@ -134,11 +138,13 @@ function move(event) {
             if(checkDown() === 0) {
                 if(looseDown === 0) {
                     looseDown++;
+                    notOK = 0;
                 }
             }
 
             else {
                 resetLoose()
+                notOK = 0;
             }
             break;
 
@@ -146,11 +152,13 @@ function move(event) {
             if(checkRight() === 0) {
                 if(looseRight === 0) {
                     looseRight++;
+                    notOK = 0;
                 }
             }
 
             else {
                 resetLoose()
+                notOK = 0;
             }
             break;
     }
@@ -158,55 +166,113 @@ function move(event) {
     loose();
 }
 
+/**
+ * Function for check and fusion cases
+ * @param x
+ * @param y
+ * @param a
+ * @param b
+ */
 function addCase(x, y, a, b) {
     if((arrayLine[x][y].childElementCount > 0) && (arrayLine[a][b].childElementCount > 0)) {
         if(arrayLine[x][y].lastElementChild.innerHTML === arrayLine[a][b].lastElementChild.innerHTML) {
-            console.log(arrayLine[x][y].lastElementChild.classList.length);
-            if((arrayLine[x][y].lastElementChild.classList.length !== 1) || (arrayLine[a][b].lastElementChild.classList.length !== 1)) {
-                arrayLine[x][y].lastElementChild.innerHTML =
-                    ((parseFloat(arrayLine[x][y].lastElementChild.innerHTML)) +
-                        (parseFloat(arrayLine[a][b].lastElementChild.innerHTML))).toString();
-                arrayLine[a][b].removeChild(arrayLine[a][b].lastElementChild);
-                arrayLine[a][b].classList.remove("notEmpty");
-                notOK++;
-                scoreT.innerHTML =  ((parseFloat(scoreT.innerHTML)) + (parseFloat(arrayLine[x][y].lastElementChild.innerHTML))).toString();
-                color(arrayLine[x][y].lastElementChild);
-                arrayLine[x][y].lastElementChild.classList.add("ok");
-                win(arrayLine[x][y].lastElementChild);
-            }
+            arrayLine[x][y].lastElementChild.innerHTML =
+                ((parseFloat(arrayLine[x][y].lastElementChild.innerHTML)) +
+                    (parseFloat(arrayLine[a][b].lastElementChild.innerHTML))).toString();
+            arrayLine[a][b].removeChild(arrayLine[a][b].lastElementChild);
+            arrayLine[a][b].classList.remove("notEmpty");
+            notOK++;
+            scoreT.innerHTML =  ((parseFloat(scoreT.innerHTML)) + (parseFloat(arrayLine[x][y].lastElementChild.innerHTML))).toString();
+            color(arrayLine[x][y].lastElementChild);
+            arrayLine[x][y].lastElementChild.classList.add("ok");
+            win(arrayLine[x][y].lastElementChild);
         }
     }
 }
 
-function moveCaseX(x, y, a, b, c, notOK) {
+/**
+ * Function for move cases up and down
+ * @param x
+ * @param y
+ * @param a
+ * @param b
+ * @param c
+ * @param number
+ * @param empty
+ */
+function moveCaseX(x, y, a, b, c, number, empty) {
     if((arrayLine[x][y].childElementCount === 0) && (arrayLine[x + a][y].childElementCount > 0)) {
-        if(x === 0) {
-            emptyUp(x, y, x);
+        if(x === number) {
+            empty(x, y, x);
             notOK++;
         }
 
-        else if((arrayLine[x + b][y].childElementCount === 0)&& (arrayLine[x + a][y].childElementCount > 0)) {
-            if((x + b + 1) === 0) {
+        else if((arrayLine[x + b][y].childElementCount === 0) && (arrayLine[x + a][y].childElementCount > 0)) {
+            if((x + b) === number) {
                 let newX = x + b;
-                emptyUp(x, y, newX);
+                empty(x, y, newX);
                 notOK++;
             }
 
-            else if((arrayLine[x + b + 2][y].childElementCount === 0)&& (arrayLine[x + a][y].childElementCount > 0)) {
+            else if((arrayLine[x + c][y].childElementCount === 0) && (arrayLine[x + a][y].childElementCount > 0)) {
                 let newX = x + c;
-                emptyUp(x, y, newX);
+                empty(x, y, newX);
                 notOK++;
             }
 
             else {
                 let newX = x + b;
-                emptyUp(x, y, newX);
+                empty(x, y, newX);
                 notOK++;
             }
         }
 
         else {
-            emptyUp(x, y, x);
+            empty(x, y, x);
+            notOK++;
+        }
+    }
+}
+
+/**
+ * Function for move cases right and left
+ * @param x
+ * @param y
+ * @param a
+ * @param b
+ * @param c
+ * @param number
+ * @param empty
+ */
+function moveCaseY(x, y, a, b, c, number, empty) {
+    if((arrayLine[x][y].childElementCount === 0) && (arrayLine[x][y + a].childElementCount > 0)) {
+        if(y === number) {
+            empty(x, y, y);
+            notOK++;
+        }
+
+        else if((arrayLine[x][y + b].childElementCount === 0)&& (arrayLine[x][y + a].childElementCount > 0)) {
+            if((y + b) === number) {
+                let newY = y + b;
+                empty(x, y, newY);
+                notOK++;
+            }
+
+            else if((arrayLine[x][y + c].childElementCount === 0)&& (arrayLine[x][y + a].childElementCount > 0)) {
+                let newY = y + c;
+                empty(x, y, newY);
+                notOK++;
+            }
+
+            else {
+                let newY = y + b;
+                empty(x, y, newY);
+                notOK++;
+            }
+        }
+
+        else {
+            empty(x, y, y);
             notOK++;
         }
     }
@@ -216,17 +282,9 @@ function moveCaseX(x, y, a, b, c, notOK) {
  * Function for check the different cases for move up
  */
 function checkUp() {
-    let notOK = 0;
-
     for(let x = 0; x < 3; x++) {
         for(let y = 0; y < 4; y++) {
-            addCase(x, y, (x + 1), y);
-        }
-    }
-
-    for(let x = 0; x < 3; x++) {
-        for(let y = 0; y < 4; y++) {
-            moveCaseX(x, y, 1, -1, -2, notOK);
+            moveCaseX(x, y, 1, -1, -2, 0, emptyUp);
         }
     }
 
@@ -238,7 +296,7 @@ function checkUp() {
 
     for(let x = 0; x < 3; x++) {
         for(let y = 0; y < 4; y++) {
-            moveCaseX(x, y, 1, -1, -2, notOK);
+            moveCaseX(x, y, 1, -1, -2, 0, emptyUp);
         }
     }
 
@@ -255,78 +313,21 @@ function checkUp() {
  * Function for check the different cases for move down
  */
 function checkDown() {
-    let notOK = 0;
-
     for(let x = 3; x > 0; x--) {
         for(let y = 0; y < 4; y++) {
-            if((arrayLine[x][y].childElementCount > 0) && (arrayLine[x - 1][y].childElementCount > 0)) {
-                if(arrayLine[x][y].lastElementChild.innerHTML === arrayLine[x - 1][y].lastElementChild.innerHTML) {
-                    arrayLine[x][y].lastElementChild.innerHTML =
-                        ((parseFloat(arrayLine[x][y].lastElementChild.innerHTML)) +
-                            (parseFloat(arrayLine[x - 1][y].lastElementChild.innerHTML))).toString();
-                    arrayLine[x - 1][y].removeChild(arrayLine[x - 1][y].lastElementChild);
-                    arrayLine[x - 1][y].classList.remove("notEmpty");
-                    notOK++;
-                    scoreT.innerHTML =  ((parseFloat(scoreT.innerHTML)) + (parseFloat(arrayLine[x][y].lastElementChild.innerHTML))).toString();
-                    arrayLine[x][y].lastElementChild.classList.add("ok");
-                    color(arrayLine[x][y].lastElementChild);
-                    win(arrayLine[x][y].lastElementChild);
-                }
-            }
+            moveCaseX(x, y, -1, +1, +2, 3,emptyDown);
         }
     }
 
     for(let x = 3; x > 0; x--) {
         for(let y = 0; y < 4; y++) {
-            if((arrayLine[x][y].childElementCount === 0) && (arrayLine[x - 1][y].childElementCount > 0)) {
-                if(x === 3) {
-                    emptyDown(x, y, x);
-                    notOK++;
-                }
-
-                else if((arrayLine[x + 1][y].childElementCount === 0)&& (arrayLine[x - 1][y].childElementCount > 0)) {
-                    if((x + 1) === 3) {
-                        let newX = x + 1;
-                        emptyDown(x, y, newX);
-                        notOK++;
-                    }
-
-                    else if((arrayLine[x + 2][y].childElementCount === 0)&& (arrayLine[x - 1][y].childElementCount > 0)) {
-                        let newX = x + 2;
-                        emptyDown(x, y, newX);
-                        notOK++;
-                    }
-
-                    else {
-                        let newX = x + 1;
-                        emptyDown(x, y, newX);
-                        notOK++;
-                    }
-                }
-
-                else {
-                    emptyDown(x, y, x);
-                    notOK++;
-                }
-            }
+            addCase(x, y, (x - 1), y)
         }
     }
 
     for(let x = 3; x > 0; x--) {
         for(let y = 0; y < 4; y++) {
-            if((arrayLine[x][y].childElementCount > 0) && (arrayLine[x - 1][y].childElementCount > 0)) {
-                if(arrayLine[x][y].lastElementChild.innerHTML === arrayLine[x - 1][y].lastElementChild.innerHTML) {
-                    arrayLine[x][y].lastElementChild.innerHTML =
-                        ((parseFloat(arrayLine[x][y].lastElementChild.innerHTML)) +
-                            (parseFloat(arrayLine[x - 1][y].lastElementChild.innerHTML))).toString();
-                    arrayLine[x - 1][y].removeChild(arrayLine[x - 1][y].lastElementChild);
-                    arrayLine[x - 1][y].classList.remove("notEmpty");
-                    notOK++;
-                    scoreT.innerHTML =  ((parseFloat(scoreT.innerHTML)) + (parseFloat(arrayLine[x][y].lastElementChild.innerHTML))).toString();
-                    color(arrayLine[x][y].lastElementChild);
-                    win(arrayLine[x][y].lastElementChild);
-                }
-            }
+            moveCaseX(x, y, -1, +1, +2, 3, emptyDown);
         }
     }
 
@@ -343,58 +344,21 @@ function checkDown() {
  * Function for check the different cases for move left
  */
 function checkLeft() {
-    let notOK = 0;
     for(let x = 0; x < 4; x++) {
         for(let y = 0; y < 3; y++) {
-            if((arrayLine[x][y].childElementCount === 0) && (arrayLine[x][y + 1].childElementCount > 0)) {
-                if(y === 0) {
-                    emptyLeft(x, y, y);
-                    notOK++;
-                }
-
-                else if((arrayLine[x][y - 1].childElementCount === 0)&& (arrayLine[x][y + 1].childElementCount > 0)) {
-                    if((y - 1) === 0) {
-                        let newY = y - 1;
-                        emptyLeft(x, y, newY);
-                        notOK++;
-                    }
-
-                    else if((arrayLine[x][y - 2].childElementCount === 0)&& (arrayLine[x][y + 1].childElementCount > 0)) {
-                        let newY = y - 2;
-                        emptyLeft(x, y, newY);
-                        notOK++;
-                    }
-
-                    else {
-                        let newY = y - 1;
-                        emptyLeft(x, y, newY);
-                        notOK++;
-                    }
-                }
-
-                else {
-                    emptyLeft(x, y, y);
-                    notOK++;
-                }
-            }
+            moveCaseY(x, y, 1, -1, -2, 0, emptyLeft);
         }
     }
 
     for(let x = 0; x < 4; x++) {
         for(let y = 0; y < 3; y++) {
-            if((arrayLine[x][y].childElementCount > 0) && (arrayLine[x][y + 1].childElementCount > 0)) {
-                if(arrayLine[x][y].lastElementChild.innerHTML === arrayLine[x][y + 1].lastElementChild.innerHTML) {
-                    arrayLine[x][y].lastElementChild.innerHTML =
-                        ((parseFloat(arrayLine[x][y].lastElementChild.innerHTML)) +
-                            (parseFloat(arrayLine[x][y + 1].lastElementChild.innerHTML))).toString();
-                    arrayLine[x][y + 1].removeChild(arrayLine[x][y + 1].lastElementChild);
-                    arrayLine[x][y + 1].classList.remove("notEmpty");
-                    notOK++;
-                    scoreT.innerHTML =  ((parseFloat(scoreT.innerHTML)) + (parseFloat(arrayLine[x][y].lastElementChild.innerHTML))).toString();
-                    color(arrayLine[x][y].lastElementChild);
-                    win(arrayLine[x][y].lastElementChild);
-                }
-            }
+            addCase(x, y, x, (y + 1));
+        }
+    }
+
+    for(let x = 0; x < 4; x++) {
+        for(let y = 0; y < 3; y++) {
+            moveCaseY(x, y, 1, -1, -2, 0, emptyLeft);
         }
     }
 
@@ -411,58 +375,21 @@ function checkLeft() {
  * Function for check the different cases for move right
  */
 function checkRight() {
-    let notOK = 0;
     for(let x = 0; x < 4; x++) {
         for(let y = 3; y > 0; y--) {
-            if((arrayLine[x][y].childElementCount === 0) && (arrayLine[x][y - 1].childElementCount > 0)) {
-                if(y === 3) {
-                    emptyRight(x, y, y);
-                    notOK++;
-                }
-
-                else if((arrayLine[x][y + 1].childElementCount === 0)&& (arrayLine[x][y - 1].childElementCount > 0)) {
-                    if((y + 1) === 3) {
-                        let newY = y + 1;
-                        emptyRight(x, y, newY);
-                        notOK++;
-                    }
-
-                    else if((arrayLine[x][y + 2].childElementCount === 0)&& (arrayLine[x][y - 1].childElementCount > 0)) {
-                        let newY = y + 2;
-                        emptyRight(x, y, newY);
-                        notOK++;
-                    }
-
-                    else {
-                        let newY = y + 1;
-                        emptyRight(x, y, newY);
-                        notOK++;
-                    }
-                }
-
-                else {
-                    emptyRight(x, y, y);
-                    notOK++;
-                }
-            }
+            moveCaseY(x, y, -1, +1, +2, 3, emptyRight);
         }
     }
 
     for(let x = 0; x < 4; x++) {
         for(let y = 3; y > 0; y--) {
-            if((arrayLine[x][y].childElementCount > 0) && (arrayLine[x][y - 1].childElementCount > 0)) {
-                if(arrayLine[x][y].lastElementChild.innerHTML === arrayLine[x][y - 1].lastElementChild.innerHTML) {
-                    arrayLine[x][y].lastElementChild.innerHTML =
-                        ((parseFloat(arrayLine[x][y].lastElementChild.innerHTML)) +
-                            (parseFloat(arrayLine[x][y - 1].lastElementChild.innerHTML))).toString();
-                    arrayLine[x][y - 1].removeChild(arrayLine[x][y - 1].lastElementChild);
-                    arrayLine[x][y - 1].classList.remove("notEmpty");
-                    notOK++;
-                    scoreT.innerHTML =  ((parseFloat(scoreT.innerHTML)) + (parseFloat(arrayLine[x][y].lastElementChild.innerHTML))).toString();
-                    color(arrayLine[x][y].lastElementChild);
-                    win(arrayLine[x][y].lastElementChild);
-                }
-            }
+            addCase(x, y, x, (y - 1));
+        }
+    }
+
+    for(let x = 0; x < 4; x++) {
+        for(let y = 3; y > 0; y--) {
+            moveCaseY(x, y, -1, +1, +2, 3, emptyRight);
         }
     }
 
@@ -614,7 +541,6 @@ function win(div) {
  */
 function loose() {
     if((looseUp === 1) && (looseDown === 1) && (looseLeft === 1) && (looseRight === 1)) {
-
         setInterval(function () {
             for(let x = 0; x < arrayLine.length; x++) {
                 document.getElementsByClassName("line")[x].style.display = "none";

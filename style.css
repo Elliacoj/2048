@@ -1,6 +1,7 @@
 * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 html {
@@ -37,7 +38,7 @@ h1 {
 }
 
 #game {
-    width: 60%;
+    width: 420px;
     height: 420px;
     border-radius: 10px;
     background-color: #7e5a31;
@@ -83,4 +84,18 @@ h1 {
     background-color: darkgrey;
     display: none;
     text-align: center;
+}
+
+@media screen and (max-width: 850px){
+    #container {
+        width: 100%;
+        margin: 0;
+        overflow: hidden;
+    }
+}
+
+@media screen and (max-width: 450px){
+    #game {
+        width: 100%;
+    }
 }
