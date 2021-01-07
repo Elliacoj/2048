@@ -80,7 +80,6 @@ function creat(caseAdd) {
 // Button for begin a game
 newGame.addEventListener("click", function () {
     resetLoose();
-    notOK = 0;
 
     for(let x = 1; x <= 16; x++) {
         let caseTest = "case" + x
@@ -541,7 +540,6 @@ function loose() {
 
             }
         }
-        win = 0;
 
         if(win === 0) {
             setTimeout(function () {
@@ -554,8 +552,6 @@ function loose() {
             }, 2000);
         }
     }
-
-
 }
 
 /**
