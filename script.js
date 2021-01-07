@@ -80,6 +80,7 @@ function creat(caseAdd) {
 // Button for begin a game
 newGame.addEventListener("click", function () {
     resetLoose();
+    notOK = 0;
 
     for(let x = 1; x <= 16; x++) {
         let caseTest = "case" + x
@@ -528,7 +529,7 @@ function loose() {
                 if(parseFloat(arrayLine[x][y].lastElementChild.innerHTML) >= 2048) {
                     win++
                     document.body.removeEventListener("keypress", move);
-                    setInterval(function () {
+                    setTimeout(function () {
                         for(let x = 0; x < arrayLine.length; x++) {
                             document.getElementsByClassName("line")[x].style.display = "none";
                         }
@@ -540,9 +541,10 @@ function loose() {
 
             }
         }
-        console.log(win);
+        win = 0;
+
         if(win === 0) {
-            setInterval(function () {
+            setTimeout(function () {
                 for(let x = 0; x < arrayLine.length; x++) {
                     document.getElementsByClassName("line")[x].style.display = "none";
                 }
@@ -552,6 +554,8 @@ function loose() {
             }, 2000);
         }
     }
+
+
 }
 
 /**
