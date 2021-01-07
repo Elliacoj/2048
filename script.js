@@ -185,7 +185,6 @@ function addCase(x, y, a, b) {
             scoreT.innerHTML =  ((parseFloat(scoreT.innerHTML)) + (parseFloat(arrayLine[x][y].lastElementChild.innerHTML))).toString();
             color(arrayLine[x][y].lastElementChild);
             arrayLine[x][y].lastElementChild.classList.add("ok");
-            win(arrayLine[x][y].lastElementChild);
         }
     }
 }
@@ -519,28 +518,29 @@ function color(div) {
 
 /**
  * Function for check the win condition
- * @param div
+ *
  */
-function win(div) {
-    if(div.innerHTML === "2048") {
-        document.body.removeEventListener("keypress", move);
-        setInterval(function () {
-            for(let x = 0; x < arrayLine.length; x++) {
-                document.getElementsByClassName("line")[x].style.display = "none";
+function win() {
+    let win = 0;
+    for(let x = 0; x < 4; x++) {
+        for(let y = 0; y < 4; y++) {
+            if(parseFloat(arrayLine[x][y].lastElementChild.innerHTML) >= 2048) {
+                win++
+                document.body.removeEventListener("keypress", move);
+                setInterval(function () {
+                    for(let x = 0; x < arrayLine.length; x++) {
+                        document.getElementsByClassName("line")[x].style.display = "none";
+                    }
+
+                    result.innerHTML = "Bravo, vous avez réussi!!!";
+                    result.style.display = "flex";
+                }, 2000);
             }
 
-            result.innerHTML = "Bravo, vous avez réussi!!!";
-            result.style.display = "flex";
-        }, 2000);
-
+        }
     }
-}
-
-/**
- * Function for check the loose condition
- */
-function loose() {
-    if((looseUp === 1) && (looseDown === 1) && (looseLeft === 1) && (looseRight === 1)) {
+    console.log(win);
+    if(win === 0) {
         setInterval(function () {
             for(let x = 0; x < arrayLine.length; x++) {
                 document.getElementsByClassName("line")[x].style.display = "none";
@@ -549,6 +549,16 @@ function loose() {
             result.innerHTML = "Dommage, vous avez perdu!!!";
             result.style.display = "flex";
         }, 2000);
+    }
+
+}
+
+/**
+ * Function for check the loose condition
+ */
+function loose() {
+    if((looseUp === 1) && (looseDown === 1) && (looseLeft === 1) && (looseRight === 1)) {
+        win();
     }
 }
 
