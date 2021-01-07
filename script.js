@@ -525,7 +525,7 @@ function loose() {
     if((looseUp === 1) && (looseDown === 1) && (looseLeft === 1) && (looseRight === 1)) {
         for(let x = 0; x < 4; x++) {
             for(let y = 0; y < 4; y++) {
-                if(parseFloat(arrayLine[x][y].lastElementChild.innerHTML) >= 16) {
+                if(parseFloat(arrayLine[x][y].lastElementChild.innerHTML) >= 2048) {
                     win++
                     document.body.removeEventListener("keypress", move);
                     setInterval(function () {
