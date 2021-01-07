@@ -517,48 +517,40 @@ function color(div) {
 }
 
 /**
- * Function for check the win condition
- *
- */
-function win() {
-    let win = 0;
-    for(let x = 0; x < 4; x++) {
-        for(let y = 0; y < 4; y++) {
-            if(parseFloat(arrayLine[x][y].lastElementChild.innerHTML) >= 2048) {
-                win++
-                document.body.removeEventListener("keypress", move);
-                setInterval(function () {
-                    for(let x = 0; x < arrayLine.length; x++) {
-                        document.getElementsByClassName("line")[x].style.display = "none";
-                    }
-
-                    result.innerHTML = "Bravo, vous avez réussi!!!";
-                    result.style.display = "flex";
-                }, 2000);
-            }
-
-        }
-    }
-    console.log(win);
-    if(win === 0) {
-        setInterval(function () {
-            for(let x = 0; x < arrayLine.length; x++) {
-                document.getElementsByClassName("line")[x].style.display = "none";
-            }
-
-            result.innerHTML = "Dommage, vous avez perdu!!!";
-            result.style.display = "flex";
-        }, 2000);
-    }
-
-}
-
-/**
- * Function for check the loose condition
+ * Function for check endgame condition
  */
 function loose() {
+    let win = 0;
+
     if((looseUp === 1) && (looseDown === 1) && (looseLeft === 1) && (looseRight === 1)) {
-        win();
+        for(let x = 0; x < 4; x++) {
+            for(let y = 0; y < 4; y++) {
+                if(parseFloat(arrayLine[x][y].lastElementChild.innerHTML) >= 16) {
+                    win++
+                    document.body.removeEventListener("keypress", move);
+                    setInterval(function () {
+                        for(let x = 0; x < arrayLine.length; x++) {
+                            document.getElementsByClassName("line")[x].style.display = "none";
+                        }
+
+                        result.innerHTML = "Bravo, vous avez réussi!!!";
+                        result.style.display = "flex";
+                    }, 2000);
+                }
+
+            }
+        }
+        console.log(win);
+        if(win === 0) {
+            setInterval(function () {
+                for(let x = 0; x < arrayLine.length; x++) {
+                    document.getElementsByClassName("line")[x].style.display = "none";
+                }
+
+                result.innerHTML = "Dommage, vous avez perdu!!!";
+                result.style.display = "flex";
+            }, 2000);
+        }
     }
 }
 
